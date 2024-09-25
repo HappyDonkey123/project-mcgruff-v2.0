@@ -83,28 +83,24 @@ Also using: AWS [IAM](https://aws.amazon.com/iam/) / [ACM](https://aws.amazon.co
 
 1. First, create the infrastructure resources:
 
-   **(First run only)**
+    Note: `terraform init` is required on the first run and only (or when you need to use the `-reconfigure` switch.
    ```
+   cd terraform/1_infrastructure
    terraform init
-   ```
-
-   ```
-   cd terraform/infrastructure
+   terraform plan -var-file="../global.tfvars"
    terraform apply -var-file="../global.tfvars"
    ```
 
-   **Hint:** You can use `pv` to provide a running time-elapsed: `terraform apply -var-file="../global.tfvars" | pv -t`
-
    Allow this to complete (approx. 35 minutes).
 
-   Output will indicate the associated AWS EC2 key pair file name (for retrieving the local Administrator password) and the  [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/) name for the Active Directory Admin credential (for domain login to the management instance):
-
+   The last few lines of the output will identify the EC2 key and access credentials stored in [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/) for the credentials to log in to the Active Directory management instance.
+   
    ```
    Active_Directory_Management_Instance_Private_Key_FIle_Name = "mcgruff-20240523161937071600000001.pem"
    Secrets_Manager_Active_Directory_Credential_Name = "mcgruff-active-directory-credential-20240523154127198200000001"
    ```
 
-   Admin console accesss to the AD management instance will be available only via AWS Fleet Manager, e.g. from the instance **EC2/Instances/Instance/Connect/RDP client** page.  Login can be via the Active Directory admin credentials, or to the local Windows `Administrator` account by first decrypting the password
+   Later, when you need to log into the AD management instance you will need to use AWS Fleet Manager from the EC2 Instance page and the credentials from [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/).
 
    **Note:** It may take a few minutes before the AD management instance is fully started/online/SSM-managed before you can connect to it.  Note also that joining it to the AD domain (which happens after the directory has been created) causes it to reboot again.
 
@@ -112,11 +108,11 @@ Also using: AWS [IAM](https://aws.amazon.com/iam/) / [ACM](https://aws.amazon.co
 
    **(First run only)**
    ```
-   terraform init
    ```
 
    ```
-   cd terraform/application
+   cd terraform/2_application
+   terraform init
    terraform apply -var-file="../global.tfvars"
    ```
 
@@ -151,7 +147,7 @@ Resources will need to be cleaned up in reverse order of their creation:
 1. Destroy the Kubernetes application resources/deployment:
 
    ```
-   cd terraform/application
+   cd terraform/2_application
    terraform destroy -var-file="global.tfvars"
    ```
 
@@ -160,7 +156,7 @@ Resources will need to be cleaned up in reverse order of their creation:
 1. Destroy the AWS infrastructure resources:
 
    ```
-   cd terraform/infrastructure
+   cd terraform/1_infrastructure
    terraform destroy -var-file="global.tfvars"
    ```
 
@@ -216,7 +212,7 @@ Resources will need to be cleaned up in reverse order of their creation:
   aws eks update-kubeconfig --region us-east-1 --name CLUSTERNAME
   ```
 
-  **Note:** this is done automatically when the `terraform/infrastructure` configuration is applied.
+  **Note:** this is done automatically when the `terraform/1_infrastructure` configuration is applied.
 
 * **View aws-load-balancer-controller versions**
 
