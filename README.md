@@ -124,6 +124,7 @@ Also using: AWS [IAM](https://aws.amazon.com/iam/) / [ACM](https://aws.amazon.co
    Application_URL = "https://wordpress.mcgruff.click"
    Secrets_Manager_Database_Credential_Name = "mcgruff-database-credential-20240523163719521000000001"
    ```
+  You will need to change the permissions to access the EKS Compute instance. You will need to add the ClusterAdmin policy to your role in the AWS console. When you go to the EKS service in AWS and go to Compute, it will prompt you for additional permissions. Click on access and add the ClusterAdmin there rather than in IAM.
 
 ## Example/estimated apply times (us-east-1)
 
@@ -151,7 +152,7 @@ Resources will need to be cleaned up in reverse order of their creation:
    terraform destroy -var-file="../global.tfvars"
    ```
 
-   Wait for this to complete (approx. ??? minutes)
+   Wait for this to complete (approx. 11 minutes)
 
 1. Destroy the AWS infrastructure resources:
 
@@ -160,7 +161,7 @@ Resources will need to be cleaned up in reverse order of their creation:
    terraform destroy -var-file="../global.tfvars"
    ```
 
-   Wait for this to complete (approx. ??? minutes)
+   Wait for this to complete (approx. 6 minutes)
 
 ## Notes
 
