@@ -3,7 +3,7 @@ module "eks" {
   version = "20.10.0"
 
   cluster_name                             = var.cluster_name
-  cluster_version                          = "1.29"
+  cluster_version                          = "1.32"
   vpc_id                                   = module.vpc.vpc_id
   subnet_ids                               = module.vpc.private_subnets
   cluster_endpoint_public_access           = true
@@ -14,18 +14,21 @@ module "eks" {
     Name = var.cluster_name
   }
 
-  cluster_addons = {
+ cluster_addons = {
     vpc-cni = {
-      version = "1.16.0-eksbuild.1"
+      version = "1.19.2-eksbuild.1"
     }
     coredns = {
-      version = "1.11.1-eksbuild.4"
+      version = "1.11.4-eksbuild.2"
     }
     kube-proxy = {
-      version = "v1.29.0-eksbuild.1"
+      version = "v1.32.0-eksbuild.2"
     }
     aws-ebs-csi-driver = {
-      version = "v1.30.0-eksbuild.1"
+      version = "v1.39.0-eksbuild.1"
+    }
+    eks-pod-identity-agent = {
+      version = "v1.3.4-eksbuild.1"
     }
   }
 
