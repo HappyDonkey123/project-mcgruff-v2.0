@@ -93,14 +93,14 @@ Also using: AWS [IAM](https://aws.amazon.com/iam/) / [ACM](https://aws.amazon.co
 
    Allow this to complete (approx. 35 minutes).
 
-   The last few lines of the output will identify the EC2 key and access credentials which are also stored in [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/) for the credentials to log in to the Active Directory management instance. The .pem file will be automatically created within your project Mcgruff folder on your computer and you can find it there.
+   The last few lines of the output will identify the EC2 key and access credentials which are also stored in [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/) for the credentials to log in to the Active Directory management instance. The .pem file will be automatically created within your project Mcgruff folder on your local computer and you can find it there.
    
    ```
    Active_Directory_Management_Instance_Private_Key_FIle_Name = "mcgruff-20240523161937071600000001.pem"
    Secrets_Manager_Active_Directory_Credential_Name = "mcgruff-active-directory-credential-20240523154127198200000001"
    ```
 
-   Later, when you need to log into the AD management instance you will need to use AWS Fleet Manager from the EC2 Instance page and use the credentials that you got from the log file which can also be found in: [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/).
+   Later, when you need to log into the AD management instance you will need to use AWS Fleet Manager from the EC2 Instance page. You can use the credentials that you got from the log file which can also be found in: [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/).
 
    **Note:** It may take a few minutes before the AD management instance is fully started/online/SSM-managed before you can connect to it.  Note also that joining it to the AD domain (which happens after the directory has been created) causes it to reboot again.
 
