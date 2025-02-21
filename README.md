@@ -56,7 +56,7 @@ Also using: AWS [IAM](https://aws.amazon.com/iam/) / [ACM](https://aws.amazon.co
 
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) installation - assumes [login credentials have been configured](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) and CLI commands can be executed against the target AWS account/region.
 
-* [AWS Route 53](https://aws.amazon.com/route53/) registered domain, owned by the AWS admin account above.  This domain will be used for the web-site/MS-AD - required for integration with Cisco Duo SSO/MFA.
+* [AWS Route 53](https://aws.amazon.com/route53/) registered domain, owned by the AWS admin account above.  This domain will be used for the web-site/MS-AD - required for integration with Cisco Duo SSO/MFA. This should cost not cost much and the domain is transferable.
 
 * [Kubectl](https://kubernetes.io/docs/tasks/tools/) installation.
 
@@ -75,7 +75,7 @@ Also using: AWS [IAM](https://aws.amazon.com/iam/) / [ACM](https://aws.amazon.co
 
    Be sure to keep encryption and bucket versioning enabled.
 
-   Then, update `terraform/infrastructure/provider.tf` and `terraform/infrastructure/provider.tf` `terraform.backend` sections with your S3 bucket name and region.
+   Then, update `terraform/infrastructure/provider.tf` and `terraform/infrastructure/provider.tf` including the backend sections with your S3 bucket name and region.
 
 1. Edit `/terraform/global.tfvars`.
 
@@ -85,7 +85,7 @@ Also using: AWS [IAM](https://aws.amazon.com/iam/) / [ACM](https://aws.amazon.co
 
     Note: `terraform init` is required on the first run and only (or when you need to use the `-reconfigure` switch.
    ```
-   cd terraform/1_infrastructure
+   cd terraform/infrastructure
    terraform init
    terraform plan -var-file="../global.tfvars"
    terraform apply -var-file="../global.tfvars"
@@ -93,14 +93,14 @@ Also using: AWS [IAM](https://aws.amazon.com/iam/) / [ACM](https://aws.amazon.co
 
    Allow this to complete (approx. 35 minutes).
 
-   The last few lines of the output will identify the EC2 key and access credentials stored in [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/) for the credentials to log in to the Active Directory management instance.
+   The last few lines of the output will identify the EC2 key and access credentials which are also stored in [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/) for the credentials to log in to the Active Directory management instance. The .pem file will be automatically created within your project Mcgruff folder on your computer and you can find it there.
    
    ```
    Active_Directory_Management_Instance_Private_Key_FIle_Name = "mcgruff-20240523161937071600000001.pem"
    Secrets_Manager_Active_Directory_Credential_Name = "mcgruff-active-directory-credential-20240523154127198200000001"
    ```
 
-   Later, when you need to log into the AD management instance you will need to use AWS Fleet Manager from the EC2 Instance page and the credentials from [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/).
+   Later, when you need to log into the AD management instance you will need to use AWS Fleet Manager from the EC2 Instance page and use the credentials that you got from the log file which can also be found in: [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/).
 
    **Note:** It may take a few minutes before the AD management instance is fully started/online/SSM-managed before you can connect to it.  Note also that joining it to the AD domain (which happens after the directory has been created) causes it to reboot again.
 
@@ -111,14 +111,14 @@ Also using: AWS [IAM](https://aws.amazon.com/iam/) / [ACM](https://aws.amazon.co
    ```
 
    ```
-   cd terraform/2_application
+   cd terraform/application
    terraform init
    terraform apply -var-file="../global.tfvars"
    ```
 
    Allow this to complete (approx. 10 minutes).
 
-   Output will provide the AWS Secrets Manager secret name for the database Admin credential, and the URL for the running application:
+   Output from the logs will provide the AWS Secrets Manager secret name for the database Admin credential, and the URL for the running application:
 
    ```
    Application_URL = "https://wordpress.mcgruff.click"
@@ -148,7 +148,7 @@ Resources will need to be cleaned up in reverse order of their creation:
 
    ```
    cd terraform/2_application
-   terraform destroy -var-file="global.tfvars"
+   terraform destroy -var-file="../global.tfvars"
    ```
 
    Wait for this to complete (approx. ??? minutes)
@@ -157,14 +157,14 @@ Resources will need to be cleaned up in reverse order of their creation:
 
    ```
    cd terraform/1_infrastructure
-   terraform destroy -var-file="global.tfvars"
+   terraform destroy -var-file="../global.tfvars"
    ```
 
    Wait for this to complete (approx. ??? minutes)
 
 ## Notes
 
-* **`mariadb.sh` and `wordpress.sh`** - These script files will launch MariaDB and Wordpress instances in local Docker containers, for testing/experimentation.  Optional to use.
+* **`mariadb.sh` and `wordpress.sh`** - These script files will launch MariaDB and Wordpress instances in local Docker containers on your computer, for testing/experimentation.  Optional to use.
 
 * **Component versions** - This project specifies component versions where possible (e.g. Terraform providers, AWS NLB, etc.) - one notable exception being the Windows AMI for the AD management instance.  This should make things reproducible, but may drift re functionality and/or security updates on certain components over time.  An update/upgrade plan (and automation) for keeping things up-to-date yet stable is advised.
 
